@@ -11,5 +11,10 @@ func main() {
 	flag.IntVar(&n, "n", 0, "Введите число не больше 20")
 	flag.Parse()
 
-	fmt.Println(fibonaci.Fibo(n))
+	if n > 20 {
+		fmt.Println("Число больше 20")
+		return
+	}
+
+	fmt.Println(fibonaci.Num(n))
 }
