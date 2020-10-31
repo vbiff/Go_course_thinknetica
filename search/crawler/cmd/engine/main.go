@@ -9,34 +9,35 @@ import (
 )
 
 var word string
-var s []string
+var str []string
 
 func main() {
 	const url1 = "https://www.opennet.ru"
 	const url2 = "https://habr.com/ru/"
-	var u []string
-	u = append(u, url2) // очень долго с habr
-	u = append(u, url1) // как это сделать нормально?
+
 	if len(os.Args) == 1 {
 		word = "" // если ничего не ввели, то выводим все
 	} else {
 		word = os.Args[1]
 	}
-	for _, url := range u {
-		data, err := spider.Scan(url, 2)
-		if err != nil {
-			log.Printf("ошибка при сканировании сайта %s: %v\n", url, err)
-		}
-		for k, v := range data {
-			s = append(s, k+v) // сохраняем в slice
-
-		}
-
+	sets := []spider.Settings{}
+	se := spider.Settings{
+		URL:   url1,
+		Depth: 2,
+	}
+	sets = append(sets, se)
+	se = spider.Settings{
+		URL:   url2,
+		Depth: 2,
+	}
+	sets = append(sets, se)
+	for _, set := range sets {
+		saveScan(&set)
 	}
 	for {
-		for i := range s {
-			if strings.Contains(strings.ToLower(s[i]), strings.ToLower(word)) { // подходит ли это для решения?
-				fmt.Printf("Результат сканирования :%s\n", s[i])
+		for i := range str {
+			if strings.Contains(strings.ToLower(str[i]), strings.ToLower(word)) { // подходит ли это для решения?
+				fmt.Printf("Результат сканирования :%s\n", str[i])
 			}
 		}
 
@@ -44,4 +45,16 @@ func main() {
 		fmt.Fscan(os.Stdin, &word)
 
 	}
+}
+
+func saveScan(sc spider.Scanner) {
+	data, err := sc.Scan()
+	if err != nil {
+		log.Printf("ошибка при сканировании сайта %v\n", err) //как теперь сюда подставить страницу URL?
+	}
+	for k, v := range data {
+		str = append(str, k+v) // сохраняем в slice
+
+	}
+
 }
