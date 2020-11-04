@@ -8,13 +8,12 @@ import (
 	"strings"
 )
 
-var word string
-var s []string
-
 func main() {
 	const url1 = "https://www.opennet.ru"
 	const url2 = "https://habr.com/ru/"
+	var word string
 	var u []string
+	var data map[string]string
 	u = append(u, url2) // очень долго с habr
 	u = append(u, url1) // как это сделать нормально?
 	if len(os.Args) == 1 {
@@ -23,25 +22,21 @@ func main() {
 		word = os.Args[1]
 	}
 	for _, url := range u {
-		data, err := spider.Scan(url, 2)
+		var err error
+		data, err = spider.Scan(url, 2)
 		if err != nil {
 			log.Printf("ошибка при сканировании сайта %s: %v\n", url, err)
+			continue
 		}
-		for k, v := range data {
-			s = append(s, k+v) // сохраняем в slice
-
-		}
-
 	}
 	for {
-		for i := range s {
-			if strings.Contains(strings.ToLower(s[i]), strings.ToLower(word)) { // подходит ли это для решения?
-				fmt.Printf("Результат сканирования :%s\n", s[i])
-			}
-		}
-
 		fmt.Print("Введите слово для поиска: ")
 		fmt.Fscan(os.Stdin, &word)
+		for url, article := range data {
+			if strings.Contains(strings.ToLower(url+article), strings.ToLower(word)) { // подходит ли это для решения?
+				fmt.Printf("Результат сканирования :%s\n", url+data[url]) // поиск по URL
+			}
+		}
 
 	}
 }
